@@ -1,0 +1,1153 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voleybol Jamoasi Jurnali</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: max-width 0.4s ease;
+        }
+        .wide-mode { max-width: 1300px; }
+        h2, h3 { text-align: center; color: #00f2fe; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
+        .hidden { display: none !important; }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px 0;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.07);
+            color: white;
+            font-size: 15px;
+        }
+        input:focus, select:focus, textarea:focus { outline: 2px solid #00f2fe; background: rgba(255,255,255,0.15); }
+        select option { background: #141e30; color: #fff; }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            border: none;
+            border-radius: 8px;
+            color: #0f2027;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2);
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 242, 254, 0.4); }
+        .logout-btn { background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; margin-top: 25px; box-shadow: none; }
+        
+        /* PROFIL TIZIMI STYLLARI */
+        .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.07);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            margin-bottom: 25px;
+        }
+        .trainer-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #00f2fe;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        }
+        .student-avatar-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid #ffd32a;
+            box-shadow: 0 0 15px rgba(255, 211, 42, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            user-select: none;
+        }
+        .profile-info h4 { margin: 0; font-size: 22px; color: #fff; letter-spacing: 0.5px; }
+        .role-tag {
+            display: inline-block; font-size: 12px; font-weight: bold; padding: 3px 10px;
+            border-radius: 5px; margin-top: 5px; text-transform: uppercase; color: #0f2027;
+        }
+        .tag-trainer { background: linear-gradient(45deg, #00f2fe, #4facfe); }
+        .tag-student { background: linear-gradient(45deg, #ffdd59, #ffd32a); }
+
+        /* TRENER NAVIGATSIYA TIZIMI */
+        .trainer-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nav-tab-btn {
+            flex: 1;
+            background: transparent;
+            color: #ccc;
+            padding: 12px 10px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            box-shadow: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-tab-btn.active {
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            color: #0f2027;
+        }
+
+        /* GRID ELEMENTLARI */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) { 
+            .dashboard-grid { grid-template-columns: 1fr; } 
+            .profile-box { flex-direction: column; text-align: center; }
+            .trainer-nav { flex-direction: column; gap: 5px; }
+        }
+        
+        .panel-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+        }
+        
+        /* CHAT OYNASI STYLLARI */
+        .chat-box {
+            height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 10px;
+        }
+        .chat-msg {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .chat-msg b { color: #ffd32a; }
+        .chat-msg.trainer-msg b { color: #00f2fe; }
+        .chat-input-group { display: flex; gap: 8px; }
+        .chat-input-group input { margin: 0; }
+        .chat-input-group button { width: auto; padding: 0 20px; }
+
+        /* MUROJAATLAR RO'YXATI */
+        .req-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        .req-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+        .req-btn-reply {
+            width: auto; padding: 6px 14px; font-size: 13px; background: linear-gradient(45deg, #00f2fe, #4facfe);
+            color: #0f2027; border-radius: 6px; box-shadow: none;
+        }
+        .req-btn-delete {
+            width: auto; padding: 6px 14px; font-size: 13px; background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white; border-radius: 6px; box-shadow: none;
+        }
+
+        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
+        .badge-active { background: #2ed573; color: #fff; }
+        .badge-absent { background: #ff4757; color: #fff; }
+        
+        .journal-tabs { display: flex; gap: 10px; margin-bottom: 15px; justify-content: center; }
+        .tab-btn {
+            background: rgba(255,255,255,0.05); color: #ccc; border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; width: auto; box-shadow: none;
+        }
+        .tab-btn.active { background: linear-gradient(45deg, #00f2fe, #4facfe); color: #0f2027; border: none; }
+
+        .table-wrapper { overflow-x: auto; margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th, td { padding: 8px 4px; text-align: center; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+        th { background: rgba(0, 242, 254, 0.1); color: #00f2fe; }
+        
+        .day-col { width: 32px; min-width: 32px; font-size: 11px; }
+        
+        /* TD EDITABLE REJIMDA FOCUS BO'LGANDA */
+        td[contenteditable="true"]:focus {
+            outline: 2px solid #00f2fe;
+            background: rgba(255,255,255,0.2) !important;
+            color: #fff !important;
+        }
+
+        /* DINAMIK KLASLAR */
+        .cell-present { color: #2ed573; font-weight: bold; background: rgba(46, 213, 115, 0.15) !important; }
+        .cell-absent { color: #ff4757; font-weight: bold; background: rgba(255, 71, 87, 0.15) !important; }
+        
+        .grade-5 { color: #fff; font-weight: bold; background: #009432 !important; } 
+        .grade-4 { color: #000; font-weight: bold; background: #A3CB38 !important; } 
+        .grade-3 { color: #fff; font-weight: bold; background: #FF9F43 !important; } 
+        .grade-2, .grade-1 { color: #fff; font-weight: bold; background: #EE5A24 !important; } 
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-container">
+    
+    <!-- 1. TIZIMGA KIRISH OYNASI -->
+    <div id="login-page">
+        <h2>Jamoa Boshqaruv Tizimi 🏐</h2>
+        <p style="text-align: center; color: #aaa;">Foydalanuvchini tanlang</p>
+        
+        <label>Foydalanuvchi:</label>
+        <select id="username"></select>
+        
+        <div id="pass-block">
+            <label>Parol:</label>
+            <input type="password" id="password" placeholder="Parolni kiriting">
+        </div>
+        
+        <button onclick="login()" style="margin-top: 10px;">Tizimga Kirish</button>
+    </div>
+
+    <!-- 2. O'QUVCHI KABINETI -->
+    <div id="student-dashboard" class="hidden">
+        <div class="profile-box" style="border-color: rgba(255, 211, 42, 0.3);">
+            <div class="student-avatar-icon">👤</div>
+            <div class="profile-info">
+                <h4 id="student-profile-name">O'quvchi Ismi</h4>
+                <div class="role-tag tag-student">O'quvchi</div>
+            </div>
+        </div>
+
+        <h2>O'quvchi Kabineti ⭐</h2>
+        
+        <div class="panel-card" style="text-align: center;">
+            <h3>Oxirgi Mashg'ulot Natijasi</h3>
+            <div style="display: flex; justify-content: space-around; margin-top: 15px;">
+                <div>
+                    <div style="font-size: 14px; color: #aaa;">Davomat</div>
+                    <div id="student-att-status" class="status-badge" style="margin-top: 5px;">Kutilmoqda</div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; color: #aaa;">Baho</div>
+                    <div id="student-grade-status" style="font-size: 24px; font-weight: bold; padding: 4px 14px; display: inline-block; margin-top: 5px;">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- CHAT BO'LIMI -->
+            <div class="panel-card">
+                <h3>💬 Jamoaviy Chat</h3>
+                <div class="chat-box" id="student-chat-box"></div>
+                <div class="chat-input-group">
+                    <input type="text" id="student-chat-input" placeholder="Xabar yozing...">
+                    <button onclick="sendChatMessage('student')">Yuborish</button>
+                </div>
+            </div>
+
+            <!-- TRENERGA MUROJAAT -->
+            <div class="panel-card">
+                <h3>✍️ Trenerga Murojaat</h3>
+                <p style="font-size: 13px; color: #aaa; margin: 0 0 10px 0;">Bahongizni o'zgartirish yoki biron sababni ko'rsatish uchun trenerga xat yuboring:</p>
+                <textarea id="student-request-text" rows="3" placeholder="Ustoz, meni bugungi bahomni qayta ko'rib chiqing..."></textarea>
+                <button onclick="sendRequestToTrainer()" style="background: linear-gradient(45deg, #ff9f43, #ff5252); color: white;">Murojaatni Yuborish</button>
+            </div>
+        </div>
+
+        <div class="panel-card" style="margin-top: 20px;">
+            <h3>Trener E'loni</h3>
+            <div id="student-news-box" style="line-height: 1.6; color: #e0e0e0;">Hozircha e'lonlar yo'q.</div>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">Tizimdan Chiqish</button>
+    </div>
+
+    <!-- 3. TRENER PANEL -->
+    <div id="trainer-dashboard" class="hidden">
+        <div class="profile-box">
+            <img src="photo_2024-08-19_10-20-15.jpg" alt="Trener Rasmi" class="trainer-avatar">
+            <div class="profile-info">
+                <h4>Alisher aka</h4>
+                <div class="role-tag tag-trainer">Trener</div>
+            </div>
+        </div>
+
+        <h2>Ustoz Boshqaruv Paneli 🖥️</h2>
+        
+        <!-- NAVIGATION TABS -->
+        <div class="trainer-nav">
+            <button id="nav-btn-journal" class="nav-tab-btn active" onclick="switchTrainerPage('journal')">📊 Jurnal va Baholash</button>
+            <button id="nav-btn-students" class="nav-tab-btn" onclick="switchTrainerPage('students')">➕ O'quvchilar va E'lonlar</button>
+            <button id="nav-btn-requests" class="nav-tab-btn" onclick="switchTrainerPage('requests')">📥 Kelgan Murojaatlar</button>
+        </div>
+
+        <!-- PAGE 1: JURNAL VA BAHOLASH -->
+        <div id="trainer-page-journal">
+            <div class="panel-card" style="background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0, 242, 254, 0.2); margin-bottom: 15px;">
+                <label style="font-weight: bold; color: #00f2fe; font-size: 16px;">📅 Joriy Oyni Tanlang:</label>
+                <select id="journal-month" onchange="changeMonth()">
+                    <option value="yanvar">Yanvar (31 kun)</option>
+                    <option value="fevral">Fevral (28 kun)</option>
+                    <option value="mart">Mart (31 kun)</option>
+                    <option value="aprel">Aprel (30 kun)</option>
+                    <option value="may">May (31 kun)</option>
+                    <option value="iyun" selected>Iyun (30 kun)</option>
+                    <option value="iyul">Iyul (31 kun)</option>
+                    <option value="avgust">Avgust (31 kun)</option>
+                    <option value="sentabr">Sentabr (30 kun)</option>
+                    <option value="oktabr">Oktabr (31 kun)</option>
+                    <option value="noyabr">Noyabr (30 kun)</option>
+                    <option value="dekabr">Dekabr (31 kun)</option>
+                </select>
+            </div>
+	<div class="panel-card" style="background: rgba(231, 76, 60, 0.05); border: 1px solid rgba(231, 76, 60, 0.3); margin-bottom: 15px;">
+    <label style="font-weight: bold; color: #e74c3c;">
+        🚫 Dars bo'lmagan kun filtri:
+    </label>
+
+    <div style="display:grid; grid-template-columns:1fr auto; gap:10px; margin-top:8px;">
+        <select id="filter-no-lesson-day"></select>
+
+        <button onclick="setDayAsNoLesson()"
+                style="background: linear-gradient(45deg,#e74c3c,#c0392b); color:white; width:auto; padding:0 15px;">
+            Dars bo'lmadi (X qo'yish)
+        </button>
+    </div>
+</div>
+
+            <!-- TEZKOR KO'RSATMA -->
+            <p style="color: #ffd32a; font-size: 14px; margin: 0 0 15px 5px; font-weight: 500;">
+                💡 <b>Tezkor rejim:</b> Katakchalarni ustiga bosing va to'g'ridan-to'g'ri qiymat kiriting! <br>
+                Davomatga: <b style="color: #2ed573;">+</b> yoki <b style="color: #ff4757;">-</b> yozing. Baholashga: <b style="color: #00f2fe;">1, 2, 3, 4, 5</b> yozing. (O'chirish uchun katakni bo'shating).
+            </p>
+
+            <div class="panel-card">
+                <h3>📅 <span id="journal-title-month" style="color: #00f2fe;">IYUN</span> OYI JURNALLARI</h3>
+                
+                <div class="journal-tabs">
+                    <button id="btn-tab-attendance" class="tab-btn active" onclick="switchJournalTab('attendance')">📅 Davomat Jurnali</button>
+                    <button id="btn-tab-grades" class="tab-btn" onclick="switchJournalTab('grades')">⭐ Baholash Jurnali</button>
+                </div>
+
+                <!-- DAVOMAT JURNALI -->
+                <div id="wrapper-attendance-table" class="table-wrapper">
+                    <table class="journal-table">
+                        <thead>
+                            <tr id="attendance-header-row">
+                                <th style="text-align: left; min-width: 170px; max-width: 170px;">Sportchi ismi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-table-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- BAHOLASH JURNALI -->
+                <div id="wrapper-grades-table" class="table-wrapper hidden">
+                    <table class="journal-table">
+                        <thead>
+                            <tr id="grades-header-row">
+                                <th style="text-align: left; min-width: 170px; max-width: 170px;">Sportchi ismi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grades-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: O'QUVCHILAR VA E'LONLAR -->
+        <div id="trainer-page-students" class="hidden">
+            <div class="panel-card" style="border: 1px solid #2ed573; background: rgba(46, 213, 115, 0.03);">
+                <h3>➕ Yangi O'quvchi Qo'shish</h3>
+		<div class="panel-card" style="border: 1px solid #ff4757; background: rgba(255, 71, 87, 0.03); margin-top:15px;">
+    <h3>❌ O'quvchi O'chirish</h3>
+
+    <label>O'quvchini tanlang:</label>
+    <select id="delete-student-select"></select>
+
+    <button onclick="deleteStudent()"
+        style="background: linear-gradient(45deg, #ff416c, #ff4b2b); color:white; margin-top:10px;">
+        O'chirish
+    </button>
+</div>
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: flex-end;">
+                    <div>
+                        <label>Ismi va Familiyasi:</label>
+                        <input type="text" id="new-student-name" placeholder="Masalan: Karimov Elbek" style="margin: 5px 0 0 0;">
+                    </div>
+                    <div>
+                        <button onclick="addNewStudent()" style="background: linear-gradient(45deg, #2ed573, #7bed9f); color: #0f2027; width: 140px;">Saqlash</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="panel-card">
+                    <h3>📢 Jamoaviy E'lonlar</h3>
+                    <label>Yangi e'lon matni:</label>
+                    <textarea id="trainer-news-text" rows="4" placeholder="Masalan: Ertaga mashg'ulot soat 15:00 da boshlanadi..."></textarea>
+                    <button onclick="saveTrainerNews()">E'lonni Chop Etish</button>
+                </div>
+
+                <div class="panel-card">
+                    <h3>💬 Jamoaviy Chat</h3>
+                    <div class="chat-box" id="trainer-chat-box"></div>
+                    <div class="chat-input-group">
+                        <input type="text" id="trainer-chat-input" placeholder="Chatga javob yozing...">
+                        <button onclick="sendChatMessage('trainer')">Yozish</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: KELGAN MUROJAATLAR -->
+        <div id="trainer-page-requests" class="hidden">
+            <div class="panel-card" style="border: 1px solid rgba(0, 242, 254, 0.4); background: rgba(0, 242, 254, 0.02);">
+                <h3>📥 O'quvchilardan Kelgan Murojaatlar</h3>
+                <p style="color: #aaa; font-size: 14px; margin-bottom: 15px;">O'quvchilar tomonidan yuborilgan barcha arizalar shu yerda ko'rinadi:</p>
+                <div id="trainer-requests-box">Hozircha murojaatlar yo'q.</div>
+            </div>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">Tizimdan Chiqish</button>
+    </div>
+
+</div>
+
+<script>
+    const defaultStudents = [
+        "Boyirova Umida", "Zokirova Sabrina", "Tojimurodova Nodira", 
+        "Djuramurodova Shirina", "Ismoilova E’zoza", "Nizomova Malak", 
+        "Ochilova Dildora", "Nizomova Senzora", "Boyirova Iroda", "Ismoilov Ulug‘bek", 
+	"Ochilov Azizjon"
+    ];
+
+    const monthDaysMap = {
+        yanvar: 31, fevral: 28, mart: 31, aprel: 30, may: 31, iyun: 30,
+        iyul: 31, avgust: 31, sentabr: 30, oktabr: 31, noyabr: 30, dekabr: 31
+    };
+
+    let studentsList = [];
+    let currentTab = 'attendance';
+    let currentUser = '';
+    let topics = {};
+    let currentNoteKey = '';
+
+    let currentTopicDay = '';
+
+function showLessonTopic(day) {
+
+    currentTopicDay = day;
+
+    document.getElementById("topicText").value =
+        localStorage.getItem("topic_" + day) || "";
+
+    document.getElementById("topicModal").classList.remove("hidden");
+}
+
+function saveTopicModal() {
+
+    const text =
+        document.getElementById("topicText").value;
+
+    localStorage.setItem(
+        "topic_" + currentTopicDay,
+        text
+    );
+
+    topics[currentTopicDay] = text;
+
+    document.getElementById("topicModal").classList.add("hidden");
+}
+
+function openNoteModal(student, month, day) {
+
+    currentNoteKey =
+        `note_${student}_${month}_${day}`;
+
+    document.getElementById("noteText").value =
+        localStorage.getItem(currentNoteKey) || "";
+
+    document.getElementById("noteModal").classList.remove("hidden");
+}
+
+function saveNoteModal() {
+
+    const text =
+        document.getElementById("noteText").value;
+
+    localStorage.setItem(currentNoteKey, text);
+
+    document.getElementById("noteModal").classList.add("hidden");
+}
+    window.onload = function() {
+    loadStudentsList();
+    updateSelectOptions();
+    changeMonth();
+    loadChat();
+
+    const deleteSelect = document.getElementById('delete-student-select');
+
+    if (deleteSelect) {
+        deleteSelect.innerHTML = '';
+
+        studentsList.forEach(st => {
+            deleteSelect.innerHTML += `<option value="${st}">${st}</option>`;
+        });
+    }
+};
+
+    function changeMonth() {
+        const currentMonth = document.getElementById('journal-month').value;
+        document.getElementById('journal-title-month').innerText = currentMonth.toUpperCase();
+        
+        const daysInMonth = monthDaysMap[currentMonth];
+	const filterSelect = document.getElementById('filter-no-lesson-day');
+
+	if (filterSelect) {
+    	filterSelect.innerHTML = '<option value="">Kunni tanlang</option>';
+
+    	for (let day = 1; day <= daysInMonth; day++) {
+        const option = document.createElement('option');
+        option.value = day;
+        option.textContent = day + '-kun';
+        filterSelect.appendChild(option);
+    }
+
+    }
+
+        const attHeader = document.getElementById('attendance-header-row');
+        const gradesHeader = document.getElementById('grades-header-row');
+        
+        attHeader.innerHTML = '<th style="text-align: left; min-width: 170px; max-width: 170px;">Sportchi ismi</th>';
+        gradesHeader.innerHTML = '<th style="text-align: left; min-width: 170px; max-width: 170px;">Sportchi ismi</th>';
+
+        for (let i = 1; i <= daysInMonth; i++) {
+            let thAtt = document.createElement('th');
+            thAtt.innerText = i;
+            thAtt.className = "day-col";
+            attHeader.appendChild(thAtt);
+
+            let thGrade = document.createElement('th');
+
+thGrade.innerHTML = i;
+thGrade.className = "day-col";
+
+thGrade.style.cursor = "pointer";
+
+thGrade.onclick = function() {
+    showLessonTopic(i);
+};
+
+gradesHeader.appendChild(thGrade);
+
+}
+
+let thPercent = document.createElement('th');
+thPercent.innerText = "%";
+gradesHeader.appendChild(thPercent);
+
+let thQuarter = document.createElement('th');
+thQuarter.innerText = "Ch";
+gradesHeader.appendChild(thQuarter);
+
+buildSeparateJournals(currentMonth, daysInMonth);
+
+}
+
+    // TO'GRIDAN-TO'G'RI KATAKKA YOZILGANDA SAQLASH FUNKSIYASI
+    function saveCellData(student, month, day, type, value) {
+        let monthData = JSON.parse(localStorage.getItem(`vball_jurnal_${month}_${student}`)) || {};
+        
+        // Agar o'sha kunda ma'lumot bo'lmasa ob'ekt ochamiz
+        if (!monthData[day]) {
+            monthData[day] = { attendance: '', grade: '-' };
+        }
+
+        let cleanValue = value.trim();
+
+        if (type === 'attendance') {
+            if (cleanValue === '+' || cleanValue === '-') {
+                monthData[day].attendance = cleanValue;
+            } else if (cleanValue === '') {
+                monthData[day].attendance = ''; // O'chirib tashlansa bo'sh qiladi
+            }
+        } else if (type === 'grade') {
+            if (['1', '2', '3', '4', '5'].includes(cleanValue)) {
+                monthData[day].grade = cleanValue;
+            } else if (cleanValue === '') {
+                monthData[day].grade = '-'; // Bo'shatilsa chiziq qiladi
+            }
+        }
+
+        localStorage.setItem(`vball_jurnal_${month}_${student}`, JSON.stringify(monthData));
+    }
+
+    function buildSeparateJournals(month, daysInMonth) {
+        const attTbody = document.getElementById('attendance-table-body');
+        const gradeTbody = document.getElementById('grades-table-body');
+        
+        attTbody.innerHTML = '';
+        gradeTbody.innerHTML = '';
+
+        studentsList.forEach(st => {
+            // Davomat qatori
+            const trAtt = document.createElement('tr');
+            let tdNameAtt = document.createElement('td');
+            tdNameAtt.style.textAlign = "left"; tdNameAtt.style.fontWeight = "bold";
+            tdNameAtt.innerText = st;
+            trAtt.appendChild(tdNameAtt);
+
+            // Baholash qatori
+            const trGrade = document.createElement('tr');
+            let tdNameGrade = document.createElement('td');
+            tdNameGrade.style.textAlign = "left"; tdNameGrade.style.fontWeight = "bold";
+            tdNameGrade.innerText = st;
+            trGrade.appendChild(tdNameGrade);
+            
+            const monthData = JSON.parse(localStorage.getItem(`vball_jurnal_${month}_${st}`)) || {};
+            
+            for (let d = 1; d <= daysInMonth; d++) {
+                // Davomat katagi
+                let tdDayAtt = document.createElement('td');
+                tdDayAtt.setAttribute('contenteditable', 'true');
+                
+                // Baholash katagi
+                let tdDayGrade = document.createElement('td');
+                tdDayGrade.setAttribute('contenteditable', 'true');
+                
+                if (monthData[d]) {
+                    // Davomatni yuklash
+                    let attSign = monthData[d].attendance;
+                    tdDayAtt.innerText = attSign || '';
+                    if(attSign === '+') tdDayAtt.className = "cell-present";
+                    if(attSign === '-') tdDayAtt.className = "cell-absent";
+
+                    // Bahoni yuklash
+                    let gradeNum = monthData[d].grade;
+                    if (gradeNum && gradeNum !== '-') {
+                        tdDayGrade.innerText = gradeNum;
+                        if(gradeNum === '5') tdDayGrade.className = "grade-5";
+                        else if(gradeNum === '4') tdDayGrade.className = "grade-4";
+                        else if(gradeNum === '3') tdDayGrade.className = "grade-3";
+                        else if(gradeNum === '2' || gradeNum === '1') tdDayGrade.className = "grade-2";
+                    } else {
+                        tdDayGrade.innerText = '';
+                    }
+                }
+
+                // KATAKDAN CHIQIB KETGANDA AVTOMAT SAQLASH (BLUR HODISASI)
+                tdDayAtt.onblur = function() {
+                    let val = tdDayAtt.innerText.trim();
+                    if(val !== '+' && val !== '-' && val !== '') {
+                        alert('Faqat "+" yoki "-" belgisini kiriting!');
+                        tdDayAtt.innerText = '';
+                        val = '';
+                    }
+                    
+                    // Ranglarni dinamik o'zgartirish
+tdDayAtt.className = '';
+
+if(val === '+') {
+    tdDayAtt.className = "cell-present";
+}
+
+if(val === '-') {
+    tdDayAtt.className = "cell-absent";
+
+    openNoteModal(st, month, d);
+}
+
+saveCellData(st, month, d, 'attendance', val);
+};
+
+                tdDayGrade.onblur = function() {
+                    let val = tdDayGrade.innerText.trim();
+                    if(d == 9){
+
+    let ball = parseInt(val);
+
+    if(val !== '' && (isNaN(ball) || ball < 0 || ball > 30)){
+        alert('9-kun uchun 0 dan 30 gacha ball kiriting!');
+        tdDayGrade.innerText = '';
+        val = '';
+    }else if(val !== ''){
+
+        tdDayGrade.innerText = val;
+    }
+
+}else{
+
+    if(val !== '' && !['1','2','3','4','5'].includes(val)) {
+        alert('Faqat 1 dan 5 gacha baho kiriting!');
+        tdDayGrade.innerText = '';
+        val = '';
+    }
+
+}
+
+                    // Ranglarni dinamik o'zgartirish
+                    tdDayGrade.className = '';
+                    if(val === '5') tdDayGrade.className = "grade-5";
+                    else if(val === '4') tdDayGrade.className = "grade-4";
+                    else if(val === '3') tdDayGrade.className = "grade-3";
+                    else if(val === '2' || val === '1') tdDayGrade.className = "grade-2";
+
+                    saveCellData(st, month, d, 'grade', val);
+                };
+                
+                trAtt.appendChild(tdDayAtt);
+                trGrade.appendChild(tdDayGrade);
+            }
+	
+            // FOIZ USTUNI
+let tdPercent = document.createElement('td');
+
+let total = 0;
+let count = 0;
+
+for (let day = 1; day <= daysInMonth; day++) {
+    if (monthData[day] && monthData[day].grade) {
+        let grade = parseInt(monthData[day].grade);
+
+        if (!isNaN(grade)) {
+            total += grade;
+            count++;
+        }
+    }
+}
+
+let percent = 0;
+
+if (count > 0) {
+    percent = Math.round((total / (count * 5)) * 100);
+}
+
+tdPercent.innerText = percent + "%";
+
+trGrade.appendChild(tdPercent);
+
+// CHORAK BAHO
+let tdQuarter = document.createElement('td');
+
+let quarterGrade = "";
+
+if (percent >= 86) quarterGrade = "5";
+else if (percent >= 71) quarterGrade = "4";
+else if (percent >= 56) quarterGrade = "3";
+else if (percent > 0) quarterGrade = "2";
+
+tdQuarter.innerText = quarterGrade;
+
+trGrade.appendChild(tdQuarter);
+            attTbody.appendChild(trAtt);
+            gradeTbody.appendChild(trGrade);
+        });
+    }
+
+    function switchTrainerPage(pageName) {
+        document.getElementById('trainer-page-journal').classList.add('hidden');
+        document.getElementById('trainer-page-students').classList.add('hidden');
+        document.getElementById('trainer-page-requests').classList.add('hidden');
+        
+        document.getElementById('nav-btn-journal').classList.remove('active');
+        document.getElementById('nav-btn-students').classList.remove('active');
+        document.getElementById('nav-btn-requests').classList.remove('active');
+
+        if(pageName === 'journal') {
+            document.getElementById('trainer-page-journal').classList.remove('hidden');
+            document.getElementById('nav-btn-journal').classList.add('active');
+            changeMonth(); // Har safar jurnalga o'tganda yangilab oladi
+        } else if(pageName === 'students') {
+            document.getElementById('trainer-page-students').classList.remove('hidden');
+            document.getElementById('nav-btn-students').classList.add('active');
+        } else if(pageName === 'requests') {
+            document.getElementById('trainer-page-requests').classList.remove('hidden');
+            document.getElementById('nav-btn-requests').classList.add('active');
+            loadRequests();
+        }
+    }
+
+    function loadStudentsList() {
+        let stored = localStorage.getItem('vball_students_list');
+        if (stored) {
+            studentsList = JSON.parse(stored);
+        } else {
+            studentsList = [...defaultStudents];
+            localStorage.setItem('vball_students_list', JSON.stringify(studentsList));
+        }
+    }
+
+    function updateSelectOptions() {
+    const loginSelect = document.getElementById('username');
+
+    let loginHtml = `<option value="trener">📋 Ustoz (Trener)</option>`;
+
+    studentsList.forEach(st => {
+        loginHtml += `<option value="${st}">${st}</option>`;
+    });
+
+    loginSelect.innerHTML = loginHtml;
+   }
+
+    function addNewStudent() {
+        const nameInput = document.getElementById('new-student-name');
+        const name = nameInput.value.trim();
+
+        if (!name) {
+            alert('Iltimos, o\'quvchining ismi va familiyasini kiriting!');
+            return;
+        }
+
+        if (studentsList.includes(name)) {
+            alert('Bu o\'quvchi ro\'yxatda allaqachon mavjud!');
+            return;
+        }
+
+        studentsList.push(name);
+        localStorage.setItem('vball_students_list', JSON.stringify(studentsList));
+        
+        nameInput.value = '';
+        alert(`${name} muvaffaqiyatli qo'shildi!`);
+        
+        updateSelectOptions();
+        changeMonth();
+    }
+
+    function login() {
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+
+        if (user === 'trener') {
+            if (pass === 'alisher2203') {
+                currentUser = 'Alisher aka (Trener)';
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('trainer-dashboard').classList.remove('hidden');
+                document.getElementById('main-container').classList.add('wide-mode');
+                switchTrainerPage('journal');
+            } else {
+                alert('Trener paroli noto‘g‘ri!');
+            }
+        } 
+        else if (studentsList.includes(user)) {
+            if (pass === '222') {
+                currentUser = user;
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('student-dashboard').classList.remove('hidden');
+                document.getElementById('main-container').classList.remove('wide-mode');
+                document.getElementById('student-profile-name').innerText = user;
+                loadStudentData(user);
+                loadChat();
+            } else {
+                alert('O‘quvchi paroli noto‘g‘ri!');
+            }
+        }
+    }
+
+    function logout() {
+        document.getElementById('trainer-dashboard').classList.add('hidden');
+        document.getElementById('student-dashboard').classList.add('hidden');
+        document.getElementById('login-page').classList.remove('hidden');
+        document.getElementById('main-container').classList.remove('wide-mode');
+        document.getElementById('password').value = '';
+        currentUser = '';
+    }
+
+    function sendChatMessage(role) {
+        const inputId = role === 'trainer' ? 'trainer-chat-input' : 'student-chat-input';
+        const inputEl = document.getElementById(inputId);
+        const text = inputEl.value.trim();
+        
+        if(!text) return;
+
+        let chatData = JSON.parse(localStorage.getItem('vball_chat_store')) || [];
+        chatData.push({
+            sender: currentUser,
+            message: text,
+            isTrainer: role === 'trainer'
+        });
+        
+        localStorage.setItem('vball_chat_store', JSON.stringify(chatData));
+        inputEl.value = '';
+        loadChat();
+    }
+
+    function loadChat() {
+        let chatData = JSON.parse(localStorage.getItem('vball_chat_store')) || [];
+        const studentBox = document.getElementById('student-chat-box');
+        const trainerBox = document.getElementById('trainer-chat-box');
+        
+        let chatHtml = chatData.map(msg => {
+            let cssClass = msg.isTrainer ? 'chat-msg trainer-msg' : 'chat-msg';
+            return `<div class="${cssClass}"><b>${msg.sender}:</b> ${msg.message}</div>`;
+        }).join('');
+
+        if(studentBox) { studentBox.innerHTML = chatHtml; studentBox.scrollTop = studentBox.scrollHeight; }
+        if(trainerBox) { trainerBox.innerHTML = chatHtml; trainerBox.scrollTop = trainerBox.scrollHeight; }
+    }
+
+    function sendRequestToTrainer() {
+        const text = document.getElementById('student-request-text').value.trim();
+        if(!text) { alert('Murojaat matnini yozing!'); return; }
+
+        let reqData = JSON.parse(localStorage.getItem('vball_requests_store')) || [];
+        reqData.push({
+            id: Date.now(),
+            student: currentUser,
+            message: text
+        });
+
+        localStorage.setItem('vball_requests_store', JSON.stringify(reqData));
+        document.getElementById('student-request-text').value = '';
+        alert('Murojaatingiz o\'qituvchiga yuborildi!');
+    }
+
+    function loadRequests() {
+        let reqData = JSON.parse(localStorage.getItem('vball_requests_store')) || [];
+        const reqBox = document.getElementById('trainer-requests-box');
+        
+        if(reqData.length === 0) {
+            reqBox.innerHTML = 'Hozircha murojaatlar yo\'q.';
+            return;
+        }
+
+        reqBox.innerHTML = reqData.map(req => `
+            <div class="req-item" id="req-${req.id}">
+                <div><b>👤 ${req.student}:</b> ${req.message}</div>
+                <div class="req-actions">
+                    <button class="req-btn-reply" onclick="replyToRequest('${req.student}')">💬 Javob yozish</button>
+                    <button class="req-btn-delete" onclick="deleteRequest(${req.id})">❌ O'chirish</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function replyToRequest(studentName) {
+        switchTrainerPage('students');
+        const chatInput = document.getElementById('trainer-chat-input');
+        chatInput.value = `${studentName}, `;
+        chatInput.focus();
+    }
+
+    function deleteRequest(id) {
+        let reqData = JSON.parse(localStorage.getItem('vball_requests_store')) || [];
+        reqData = reqData.filter(r => r.id !== id);
+        localStorage.setItem('vball_requests_store', JSON.stringify(reqData));
+        loadRequests();
+    }
+
+    function switchJournalTab(tabName) {
+        currentTab = tabName;
+        if(tabName === 'attendance') {
+            document.getElementById('btn-tab-attendance').classList.add('active');
+            document.getElementById('btn-tab-grades').classList.remove('active');
+            document.getElementById('wrapper-attendance-table').classList.remove('hidden');
+            document.getElementById('wrapper-grades-table').classList.add('hidden');
+        } else {
+            document.getElementById('btn-tab-attendance').classList.remove('active');
+            document.getElementById('btn-tab-grades').classList.add('active');
+            document.getElementById('wrapper-attendance-table').classList.add('hidden');
+            document.getElementById('wrapper-grades-table').classList.remove('hidden');
+        }
+    }
+
+    function saveTrainerNews() {
+        const text = document.getElementById('trainer-news-text').value.trim();
+        if(!text) { alert('Xabar matnini kiriting!'); return; }
+        localStorage.setItem('vball_news', text);
+        alert('E\'lon chop etildi!');
+        document.getElementById('trainer-news-text').value = '';
+    }
+
+    function loadStudentData(studentName) {
+        document.getElementById('student-news-box').innerText = localStorage.getItem('vball_news') || "Hozircha e'lonlar yo'q.";
+        const allMonths = ['dekabr', 'noyabr', 'oktabr', 'sentabr', 'avgust', 'iyul', 'iyun', 'may', 'aprel', 'mart', 'fevral', 'yanvar'];
+        let lastAttendance = "Kutilmoqda";
+        let lastGrade = "-";
+        let lastGradeClass = "";
+        
+        for (let m of allMonths) {
+            const monthData = JSON.parse(localStorage.getItem(`vball_jurnal_${m}_${studentName}`));
+            if (monthData) {
+                let maxDays = monthDaysMap[m];
+                for (let d = maxDays; d >= 1; d--) {
+                    if (monthData[d]) {
+                        lastAttendance = monthData[d].attendance === '+' ? 'Keldi' : (monthData[d].attendance === '-' ? 'Kelmadi' : 'Kutilmoqda');
+                        lastGrade = monthData[d].grade || '-';
+                        
+                        if(lastGrade === '5') lastGradeClass = "grade-5";
+                        else if(lastGrade === '4') lastGradeClass = "grade-4";
+                        else if(lastGrade === '3') lastGradeClass = "grade-3";
+                        else if(lastGrade === '2' || lastGrade === '1') lastGradeClass = "grade-2";
+                        break;
+                    }
+                }
+            }
+            if (lastAttendance !== "Kutilmoqda") break;
+        }
+
+        const attBadge = document.getElementById('student-att-status');
+        attBadge.innerText = lastAttendance;
+        if(lastAttendance === 'Keldi') attBadge.className = "status-badge badge-active";
+        else if(lastAttendance === 'Kelmadi') attBadge.className = "status-badge badge-absent";
+        else attBadge.className = "status-badge";
+        
+        const gradeDisplay = document.getElementById('student-grade-status');
+        gradeDisplay.innerText = lastGrade;
+        gradeDisplay.className = lastGradeClass;
+    }
+	function setDayAsNoLesson() {
+    const day = document.getElementById('filter-no-lesson-day').value;
+
+    if (!day) {
+        alert("Avval kunni tanlang!");
+        return;
+    }
+
+    const currentMonth = document.getElementById('journal-month').value;
+
+    studentsList.forEach(student => {
+        let monthData = JSON.parse(
+            localStorage.getItem(`vball_jurnal_${currentMonth}_${student}`)
+        ) || {};
+
+        if (!monthData[day]) {
+            monthData[day] = {
+                attendance: '',
+                grade: '-'
+            };
+        }
+
+        monthData[day].attendance = 'X';
+
+        localStorage.setItem(
+            `vball_jurnal_${currentMonth}_${student}`,
+            JSON.stringify(monthData)
+        );
+    });
+
+    changeMonth();
+    alert(day + "-kun dars bo'lmagan kun deb belgilandi!");
+}
+</script>
+
+<div id="noteModal" class="hidden" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+    <div style="
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    width:400px;
+    max-width:90%;
+    ">
+        <h3>Примечание</h3>
+
+        <textarea id="noteText"
+        style="width:100%;height:120px;"></textarea>
+
+        <button onclick="saveNoteModal()">
+            Saqlash
+        </button>
+    </div>
+</div>
+
+<div id="topicModal" class="hidden" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div style="
+background:#1e293b;
+padding:20px;
+border-radius:12px;
+width:400px;
+max-width:90%;
+">
+
+<h3>Dars mavzusi</h3>
+
+<textarea
+id="topicText"
+style="width:100%;height:120px;">
+</textarea>
+
+<br><br>
+
+<button onclick="saveTopicModal()">
+Saqlash
+</button>
+
+</div>
+</div>
+
+}
+
+</body>
+</html>
